@@ -1,3 +1,4 @@
+import com.android.projectmodel.matchAllArtifacts
 import java.util.Date
 import java.util.Properties
 
@@ -35,6 +36,14 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.1.0")
 }
 
+tasks.register("sourcesJar", Jar::class) {
+    from(android.sourceSets["main"].java.srcDirs)
+    archiveClassifier.apply {
+        convention("sources")
+        value("sources")
+    }
+}
+
 bintray {
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
@@ -64,6 +73,8 @@ afterEvaluate {
         publications {
             register("release", MavenPublication::class) {
                 from(components.named("release").get())
+                artifact(tasks.named("sourcesJar").get())
+
                 groupId = "com.geniewits.lambdalist"
                 artifactId = "lambda-list"
                 version = "1.0.0"
